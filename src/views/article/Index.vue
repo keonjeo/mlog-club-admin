@@ -180,7 +180,6 @@
 </template>
 
 <script>
-import config from "@/apis/Config";
 import HttpClient from "@/apis/HttpClient";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import HtmlEditor from "@/components/HtmlEditor";
