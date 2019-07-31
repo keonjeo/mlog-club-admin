@@ -1,4 +1,11 @@
-# admin
+## 介绍
+
+该项目为：https://mlog.club 的后台管理。利用element-ui进行构建。
+
+关联项目：
+- mlog-club：https://github.com/mlogclub/mlog
+- mlog-club-site：https://github.com/mlogclub/mlog-club-site
+- mlog-club-admin：https://github.com/mlogclub/mlog-club-admin
 
 ## Project setup
 ```
