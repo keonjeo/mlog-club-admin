@@ -135,134 +135,133 @@
 </template>
 
 <script>
-  import config from '../../apis/Config'
-  import HttpClient from '../../apis/HttpClient'
+import HttpClient from '@/apis/HttpClient';
 
-  export default {
-    name: "List",
-    data() {
-      return {
-        results: [],
-        listLoading: false,
-        page: {},
-        filters: {},
-        selectedRows: [],
+export default {
+  name: 'List',
+  data() {
+    return {
+      results: [],
+      listLoading: false,
+      page: {},
+      filters: {},
+      selectedRows: [],
 
-        addForm: {
-          'forumId': '',
-          'userId': '',
-          'title': '',
-          'content': '',
-          'status': '',
-          'createTime': '',
-        },
-        addFormVisible: false,
-        addFormRules: {},
-        addLoading: false,
+      addForm: {
+        forumId: '',
+        userId: '',
+        title: '',
+        content: '',
+        status: '',
+        createTime: '',
+      },
+      addFormVisible: false,
+      addFormRules: {},
+      addLoading: false,
 
-        editForm: {
-          'id': '',
-          'forumId': '',
-          'userId': '',
-          'title': '',
-          'content': '',
-          'status': '',
-          'createTime': '',
-        },
-        editFormVisible: false,
-        editFormRules: {},
-        editLoading: false,
-      }
+      editForm: {
+        id: '',
+        forumId: '',
+        userId: '',
+        title: '',
+        content: '',
+        status: '',
+        createTime: '',
+      },
+      editFormVisible: false,
+      editFormRules: {},
+      editLoading: false,
+    };
+  },
+  mounted() {
+    this.list();
+  },
+  methods: {
+    list() {
+      const me = this;
+      me.listLoading = true;
+      const params = Object.assign(me.filters, {
+        page: me.page.page,
+        limit: me.page.limit,
+      });
+      HttpClient.post('/api/admin/topic/list', params)
+        .then((data) => {
+          me.results = data.results;
+          me.page = data.page;
+        })
+        .finally(() => {
+          me.listLoading = false;
+        });
     },
-    mounted() {
+    handlePageChange(val) {
+      this.page.page = val;
       this.list();
     },
-    methods: {
-      list() {
-        let me = this
-        me.listLoading = true
-        let params = Object.assign(me.filters, {
-          page: me.page.page,
-          limit: me.page.limit
+    handleLimitChange(val) {
+      this.page.limit = val;
+      this.list();
+    },
+    handleAdd() {
+      this.addForm = {
+        name: '',
+        description: '',
+      };
+      this.addFormVisible = true;
+    },
+    addSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/topic/create', this.addForm)
+        .then((data) => {
+          me.$message({ message: '提交成功', type: 'success' });
+          me.addFormVisible = false;
+          me.list();
         })
-        HttpClient.post('/api/admin/topic/list', params)
-          .then(data => {
-            me.results = data.results
-            me.page = data.page
-          })
-          .finally(() => {
-            me.listLoading = false
-          })
-      },
-      handlePageChange(val) {
-        this.page.page = val
-        this.list()
-      },
-      handleLimitChange(val) {
-        this.page.limit = val
-        this.list()
-      },
-      handleAdd() {
-        this.addForm = {
-          name: '',
-          description: '',
-        }
-        this.addFormVisible = true
-      },
-      addSubmit() {
-        let me = this
-        HttpClient.post('/api/admin/topic/create', this.addForm)
-          .then(data => {
-            me.$message({message: '提交成功', type: 'success'});
-            me.addFormVisible = false
-            me.list()
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      handleEdit(index, row) {
-        let me = this
-        HttpClient.get('/api/admin/topic/' + row.id)
-          .then(data => {
-            me.editForm = Object.assign({}, data);
-            me.editFormVisible = true
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      editSubmit() {
-        let me = this
-        HttpClient.post('/api/admin/topic/update', me.editForm)
-          .then(data => {
-            me.list()
-            me.editFormVisible = false
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      deleteSubmit(row) {
-        let me = this
-        HttpClient.post('/api/admin/topic/delete', {id: row.id})
-          .then(data => {
-            me.$message({message: '删除成功', type: 'success'})
-            me.list()
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      handleSelectionChange(val) {
-        this.selectedRows = val
-      },
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    handleEdit(index, row) {
+      const me = this;
+      HttpClient.get(`/api/admin/topic/${row.id}`)
+        .then((data) => {
+          me.editForm = Object.assign({}, data);
+          me.editFormVisible = true;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    editSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/topic/update', me.editForm)
+        .then((data) => {
+          me.list();
+          me.editFormVisible = false;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    deleteSubmit(row) {
+      const me = this;
+      HttpClient.post('/api/admin/topic/delete', { id: row.id })
+        .then((data) => {
+          me.$message({ message: '删除成功', type: 'success' });
+          me.list();
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    handleSelectionChange(val) {
+      this.selectedRows = val;
+    },
 
-      toTopic(row) {
-        window.open(config.host + '/topic/' + row.id, '_blank')
-      }
-    }
-  }
+    toTopic(row) {
+      window.open(`https://mlog.club/topic/${row.id}`, '_blank');
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -379,5 +378,3 @@
 
   }
 </style>
-
-

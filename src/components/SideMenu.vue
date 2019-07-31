@@ -24,25 +24,25 @@
 </template>
 
 <script>
-  export default {
-    name: 'SideMenu',
-    methods: {
-      handleOpen() {
-      },
-      handleClose() {
-      },
-      handleSelect: function (a, b) {
-      },
-      showMenu(i, status) {
-        this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-' + i)[0].style.display = status ? 'block' : 'none';
-      },
+export default {
+  name: 'SideMenu',
+  methods: {
+    handleOpen() {
     },
-    computed: {
-      collapsed() {
-        return this.$store.state.Default.collapsed;
-      }
-    }
-  };
+    handleClose() {
+    },
+    handleSelect(a, b) {
+    },
+    showMenu(i, status) {
+      this.$refs.menuCollapsed.getElementsByClassName(`submenu-hook-${i}`)[0].style.display = status ? 'block' : 'none';
+    },
+  },
+  computed: {
+    collapsed() {
+      return this.$store.state.Default.collapsed;
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

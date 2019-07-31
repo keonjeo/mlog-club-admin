@@ -1,15 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
-import UserIndex from './views/user/Index';
-import CategoryIndex from './views/category/Index';
-import TagIndex from './views/tag/Index';
-import TopicIndex from './views/topic/Index';
-import ArticleIndex from './views/article/Index';
-import CommentIndex from './views/comment/Index';
-import OauthClientIndex from './views/oauth-client/Index'
-import OauthTokenIndex from './views/oauth-token/Index'
-import SysConfigIndex from './views/sys-config/Index'
+import Home from '@/views/Home.vue';
+import UserIndex from '@/views/user/Index.vue';
+import CategoryIndex from '@/views/category/Index.vue';
+import TagIndex from '@/views/tag/Index.vue';
+import TopicIndex from '@/views/topic/Index.vue';
+import ArticleIndex from '@/views/article/Index.vue';
+import CommentIndex from '@/views/comment/Index.vue';
+import SysConfigIndex from '@/views/sys-config/Index.vue';
 
 Vue.use(Router);
 
@@ -20,8 +18,8 @@ export default new Router({
       name: '首页',
       hidden: true,
       redirect: {
-        path: '/article/index'
-      }
+        path: '/article/index',
+      },
     },
     {
       path: '1',
@@ -33,31 +31,31 @@ export default new Router({
           path: '/article/index',
           component: ArticleIndex,
           name: '文章',
-          iconCls: 'iconfont icon-article'
+          iconCls: 'iconfont icon-article',
         },
         {
           path: '/topic/index',
           component: TopicIndex,
           name: '话题',
-          iconCls: 'iconfont icon-topic'
+          iconCls: 'iconfont icon-topic',
         },
         {
           path: '/category/index',
           component: CategoryIndex,
           name: '分类',
-          iconCls: 'iconfont icon-category'
+          iconCls: 'iconfont icon-category',
         },
         {
           path: '/tag/index',
           component: TagIndex,
           name: '标签',
-          iconCls: 'iconfont icon-tags'
+          iconCls: 'iconfont icon-tags',
         },
         {
           path: '/comment/index',
           component: CommentIndex,
           name: '评论',
-          iconCls: 'iconfont icon-comment'
+          iconCls: 'iconfont icon-comment',
         },
         {
           path: '/sys-config/index',
@@ -65,7 +63,7 @@ export default new Router({
           name: '系统配置',
           iconCls: 'iconfont icon-setting',
         },
-      ]
+      ],
     },
 
     {
@@ -78,9 +76,9 @@ export default new Router({
           path: '/user/index',
           component: UserIndex,
           name: '用户',
-          iconCls: 'iconfont icon-user'
-        }
-      ]
+          iconCls: 'iconfont icon-user',
+        },
+      ],
     },
 
     // {

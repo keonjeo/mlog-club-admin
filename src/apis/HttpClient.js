@@ -1,69 +1,58 @@
-import axios from 'axios'
-import cookieManager from './CookieManager'
-import config from './Config'
+import axios from 'axios';
+import qs from 'qs';
+import cookies from 'js-cookie'
 
 class HttpClient {
   constructor() {
     this.http = axios.create({
-      baseURL: config.host
-    })
-    this.http.defaults.headers.common['X-Client'] = 'mlog'
-    this.http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-    this.http.interceptors.request.use(function (config) {
-      let accessToken = cookieManager.getCookie('accessToken')
-      if (accessToken) {
-        config.headers.common['Authorization'] = 'Bearer ' + accessToken
+      // baseURL: 'https://mlog.club'
+      baseURL: 'http://localhost:8082'
+    });
+    this.http.defaults.headers.common['X-Client'] = 'mlog-club-admin';
+    this.http.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    this.http.interceptors.request.use((config) => {
+      const userToken = cookies.get('userToken');
+      if (userToken) {
+        config.headers.common['X-User-Token'] = userToken
       }
-      return config
-    }, function (reason) {
-      console.error(reason)
-    })
-    this.http.interceptors.response.use(function (response) {
-      if (response.status != 200) {
-        return Promise.reject('请求失败，status=' + response.status)
+      return config;
+    }, (reason) => {
+      console.error(reason);
+    });
+    this.http.interceptors.response.use((response) => {
+      if (response.status !== 200) {
+        return Promise.reject(response);
       }
       if (response.data.success) {
-        return response.data.data
-      } else {
-        if (response.data.errorCode === 1) { // 未登录
-          window.vue.$store.dispatch('Login/showLogin')
-          return Promise.reject(response.data)
-        }
-        window.vue.$message({
-          showClose: true,
-          message: response.data.message,
-          type: 'error'
-        })
-        return Promise.reject(response.data)
+        return response.data.data;
       }
-    }, function (error) {
+      if (response.data.errorCode === 1) { // 未登录
+        window.vue.$store.dispatch('Login/showLogin');
+        return Promise.reject(response.data);
+      }
+      // window.vue.$message({
+      //   showClose: true,
+      //   message: response.data.message,
+      //   type: 'error',
+      // });
+      return Promise.reject(response.data);
+    }, (error) => {
       window.vue.$message({
         showClose: true,
         message: error,
-        type: 'error'
-      })
-      return Promise.reject(error)
-    })
+        type: 'error',
+      });
+      return Promise.reject(error);
+    });
   }
 
   get(api) {
-    return this.http.get(api)
+    return this.http.get(api);
   }
 
   post(api, data) {
-    return this.http.post(api, toParams(data))
+    return this.http.post(api, qs.stringify(data));
   }
 }
 
-// json object to params
-function toParams(data) {
-  const params = new URLSearchParams()
-  if (data) {
-    for (let o in data) {
-      params.append(o, data[o])
-    }
-  }
-  return params
-}
-
-export default new HttpClient()
+export default new HttpClient();

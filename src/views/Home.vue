@@ -29,35 +29,35 @@
 </template>
 
 <script>
-  import FrameHeader from '../components/FrameHeader';
-  import SideMenu from '../components/SideMenu';
+import FrameHeader from '../components/FrameHeader';
+import SideMenu from '../components/SideMenu';
 
-  export default {
-    components: {
-      FrameHeader,
-      SideMenu
+export default {
+  components: {
+    FrameHeader,
+    SideMenu,
+  },
+  data() {
+    return {
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: '',
+      },
+    };
+  },
+  methods: {},
+  computed: {
+    collapsed() {
+      return this.$store.state.Default.collapsed;
     },
-    data() {
-      return {
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        }
-      };
-    },
-    methods: {},
-    computed: {
-      collapsed() {
-        return this.$store.state.Default.collapsed;
-      }
-    }
-  };
+  },
+};
 
 </script>
 

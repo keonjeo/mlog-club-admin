@@ -95,107 +95,107 @@
 </template>
 
 <script>
-  import HttpClient from '@/apis/HttpClient'
+import HttpClient from '@/apis/HttpClient';
 
-  export default {
-    name: 'List',
-    data() {
-      return {
-        results: [],
-        listLoading: false,
-        page: {},
-        filters: {},
+export default {
+  name: 'List',
+  data() {
+    return {
+      results: [],
+      listLoading: false,
+      page: {},
+      filters: {},
 
-        addForm: {
-          name: '',
-          description: '',
-        },
-        addFormVisible: false,
-        addFormRules: {},
-        addLoading: false,
+      addForm: {
+        name: '',
+        description: '',
+      },
+      addFormVisible: false,
+      addFormRules: {},
+      addLoading: false,
 
-        editForm: {
-          id: '',
-          name: '',
-          description: '',
-          status: 0,
-        },
-        editFormVisible: false,
-        editFormRules: {},
-        editLoading: false,
-      };
+      editForm: {
+        id: '',
+        name: '',
+        description: '',
+        status: 0,
+      },
+      editFormVisible: false,
+      editFormRules: {},
+      editLoading: false,
+    };
+  },
+  mounted() {
+    this.list();
+  },
+  methods: {
+    list() {
+      const me = this;
+      me.listLoading = true;
+      const params = Object.assign(me.filters, {
+        page: me.page.page,
+        limit: me.page.limit,
+      });
+      HttpClient.post('/api/admin/category/list', params)
+        .then((data) => {
+          me.results = data.results;
+          me.page = data.page;
+        })
+        .finally(() => {
+          me.listLoading = false;
+        });
     },
-    mounted() {
+    handlePageChange(val) {
+      this.page.page = val;
       this.list();
     },
-    methods: {
-      list() {
-        const me = this;
-        me.listLoading = true;
-        const params = Object.assign(me.filters, {
-          page: me.page.page,
-          limit: me.page.limit,
-        });
-        HttpClient.post('/api/admin/category/list', params)
-          .then((data) => {
-            me.results = data.results;
-            me.page = data.page;
-          })
-          .finally(() => {
-            me.listLoading = false;
-          });
-      },
-      handlePageChange(val) {
-        this.page.page = val;
-        this.list();
-      },
-      handleLimitChange(val) {
-        this.page.limit = val;
-        this.list();
-      },
-      handleAdd() {
-        this.addForm = {
-          name: '',
-          description: '',
-        };
-        this.addFormVisible = true;
-      },
-      addSubmit() {
-        const me = this;
-        HttpClient.post('/api/admin/category/create', me.addForm)
-          .then((data) => {
-            me.$message({message: '提交成功', type: 'success'});
-            me.addFormVisible = false;
-            me.list();
-          })
-          .catch((rsp) => {
-            me.$notify.error({title: '错误', message: rsp.message});
-          });
-      },
-      handleEdit(index, row) {
-        const me = this;
-        HttpClient.get("/api/admin/category/" + row.id)
-          .then((data) => {
-            me.editForm = Object.assign({}, data);
-            me.editFormVisible = true;
-          })
-          .catch((rsp) => {
-            me.$notify.error({title: '错误', message: rsp.message});
-          });
-      },
-      editSubmit() {
-        const me = this;
-        HttpClient.post("/api/admin/category/update", me.editForm)
-          .then((data) => {
-            me.list();
-            me.editFormVisible = false;
-          })
-          .catch((rsp) => {
-            me.$notify.error({title: '错误', message: rsp.message});
-          });
-      },
+    handleLimitChange(val) {
+      this.page.limit = val;
+      this.list();
     },
-  };
+    handleAdd() {
+      this.addForm = {
+        name: '',
+        description: '',
+      };
+      this.addFormVisible = true;
+    },
+    addSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/category/create', me.addForm)
+        .then((data) => {
+          me.$message({ message: '提交成功', type: 'success' });
+          me.addFormVisible = false;
+          me.list();
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    handleEdit(index, row) {
+      const me = this;
+      HttpClient.get(`/api/admin/category/${row.id}`)
+        .then((data) => {
+          me.editForm = Object.assign({}, data);
+          me.editFormVisible = true;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    editSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/category/update', me.editForm)
+        .then((data) => {
+          me.list();
+          me.editFormVisible = false;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+  },
+};
 </script>
 
 <style scoped>

@@ -119,136 +119,135 @@
 </template>
 
 <script>
-  import HttpClient from '../../apis/HttpClient'
+import HttpClient from '@/apis/HttpClient';
 
-  export default {
-    name: "List",
-    data() {
-      return {
-        results: [],
-        listLoading: false,
-        page: {},
-        filters: {},
-        selectedRows: [],
+export default {
+  name: 'List',
+  data() {
+    return {
+      results: [],
+      listLoading: false,
+      page: {},
+      filters: {},
+      selectedRows: [],
 
-        addForm: {
+      addForm: {
 
-          'userId': '',
+        userId: '',
 
-          'title': '',
+        title: '',
 
-          'summary': '',
+        summary: '',
 
-          'sourceUrl': '',
+        sourceUrl: '',
 
-          'status': '',
+        status: '',
 
-          'createTime': '',
+        createTime: '',
 
-        },
-        addFormVisible: false,
-        addFormRules: {},
-        addLoading: false,
+      },
+      addFormVisible: false,
+      addFormRules: {},
+      addLoading: false,
 
-        editForm: {
-          'id': '',
+      editForm: {
+        id: '',
 
-          'userId': '',
+        userId: '',
 
-          'title': '',
+        title: '',
 
-          'summary': '',
+        summary: '',
 
-          'sourceUrl': '',
+        sourceUrl: '',
 
-          'status': '',
+        status: '',
 
-          'createTime': '',
+        createTime: '',
 
-        },
-        editFormVisible: false,
-        editFormRules: {},
-        editLoading: false,
-      }
+      },
+      editFormVisible: false,
+      editFormRules: {},
+      editLoading: false,
+    };
+  },
+  mounted() {
+    this.list();
+  },
+  methods: {
+    list() {
+      const me = this;
+      me.listLoading = true;
+      const params = Object.assign(me.filters, {
+        page: me.page.page,
+        limit: me.page.limit,
+      });
+      HttpClient.post('/api/admin/article-share/list', params)
+        .then((data) => {
+          me.results = data.results;
+          me.page = data.page;
+        })
+        .finally(() => {
+          me.listLoading = false;
+        });
     },
-    mounted() {
+    handlePageChange(val) {
+      this.page.page = val;
       this.list();
     },
-    methods: {
-      list() {
-        let me = this
-        me.listLoading = true
-        let params = Object.assign(me.filters, {
-          page: me.page.page,
-          limit: me.page.limit
+    handleLimitChange(val) {
+      this.page.limit = val;
+      this.list();
+    },
+    handleAdd() {
+      this.addForm = {
+        name: '',
+        description: '',
+      };
+      this.addFormVisible = true;
+    },
+    addSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/article-share/create', this.addForm)
+        .then((data) => {
+          me.$message({ message: '提交成功', type: 'success' });
+          me.addFormVisible = false;
+          me.list();
         })
-        HttpClient.post('/api/admin/article-share/list', params)
-          .then(data => {
-            me.results = data.results
-            me.page = data.page
-          })
-          .finally(() => {
-            me.listLoading = false
-          })
-      },
-      handlePageChange(val) {
-        this.page.page = val
-        this.list()
-      },
-      handleLimitChange(val) {
-        this.page.limit = val
-        this.list()
-      },
-      handleAdd() {
-        this.addForm = {
-          name: '',
-          description: '',
-        }
-        this.addFormVisible = true
-      },
-      addSubmit() {
-        let me = this
-        HttpClient.post('/api/admin/article-share/create', this.addForm)
-          .then(data => {
-            me.$message({message: '提交成功', type: 'success'});
-            me.addFormVisible = false
-            me.list()
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      handleEdit(index, row) {
-        let me = this
-        HttpClient.get('/api/admin/article-share/' + row.id)
-          .then(data => {
-            me.editForm = Object.assign({}, data);
-            me.editFormVisible = true
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      editSubmit() {
-        let me = this
-        HttpClient.post('/api/admin/article-share/update', me.editForm)
-          .then(data => {
-            me.list()
-            me.editFormVisible = false
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    handleEdit(index, row) {
+      const me = this;
+      HttpClient.get(`/api/admin/article-share/${row.id}`)
+        .then((data) => {
+          me.editForm = Object.assign({}, data);
+          me.editFormVisible = true;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    editSubmit() {
+      const me = this;
+      HttpClient.post('/api/admin/article-share/update', me.editForm)
+        .then((data) => {
+          me.list();
+          me.editFormVisible = false;
+        })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
 
-      handleSelectionChange(val) {
-        this.selectedRows = val
-      },
-    }
-  }
+    handleSelectionChange(val) {
+      this.selectedRows = val;
+    },
+  },
+};
 </script>
 
 <style scoped>
 
 </style>
-

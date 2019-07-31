@@ -25,51 +25,51 @@
 </template>
 
 <script>
-  export default {
-    name: 'Header',
-    data() {
-      return {
-        sysName: 'M-LOG CLUB',
-      }
+export default {
+  name: 'Header',
+  data() {
+    return {
+      sysName: 'M-LOG CLUB',
+    };
+  },
+  methods: {
+    // 折叠导航栏
+    collapse() {
+      this.$store.dispatch('Default/collapse');
     },
-    methods: {
-      // 折叠导航栏
-      collapse: function () {
-        this.$store.dispatch('Default/collapse')
-      },
-      // 退出登录
-      logout: function () {
-        var _this = this
-        this.$confirm('确认退出吗?', '提示', {
-          type: 'warning'
-        }).then(() => {
-          sessionStorage.removeItem('user')
-          _this.$router.push('/login')
-        }).catch(() => {
+    // 退出登录
+    logout() {
+      const _this = this;
+      this.$confirm('确认退出吗?', '提示', {
+        type: 'warning',
+      }).then(() => {
+        sessionStorage.removeItem('user');
+        _this.$router.push('/login');
+      }).catch(() => {
 
-        })
-      },
+      });
     },
-    mounted() {
-      var user = sessionStorage.getItem('user')
-      if (user) {
-        user = JSON.parse(user)
-      }
-    },
-    computed: {
-      collapsed() {
-        return this.$store.state.Default.collapsed
-      },
-      nickname() {
-        var userInfo = this.$store.state.Login.userInfo || {}
-        return userInfo.nickname || ''
-      },
-      avatar() {
-        var userInfo = this.$store.state.Login.userInfo || {}
-        return userInfo.avatar || ''
-      }
+  },
+  mounted() {
+    let user = sessionStorage.getItem('user');
+    if (user) {
+      user = JSON.parse(user);
     }
-  }
+  },
+  computed: {
+    collapsed() {
+      return this.$store.state.Default.collapsed;
+    },
+    nickname() {
+      const userInfo = this.$store.state.Login.userInfo || {};
+      return userInfo.nickname || '';
+    },
+    avatar() {
+      const userInfo = this.$store.state.Login.userInfo || {};
+      return userInfo.avatar || '';
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">

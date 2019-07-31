@@ -21,50 +21,50 @@
 </template>
 
 <script>
-  import HttpClient from '../../apis/HttpClient'
+import HttpClient from '@/apis/HttpClient';
 
-  export default {
-    name: "List",
-    data() {
-      return {
-        configs: [],
-        loading: false
-      }
-    },
-    mounted() {
-      this.load();
-    },
-    methods: {
-      load() {
-        let me = this
-        HttpClient.get('/api/admin/sys-config/all')
-          .then(data => {
-            me.configs = data
-          })
-          .catch(rsp => {
-            me.$notify.error({title: '错误', message: rsp.message})
-          })
-      },
-      save() {
-        let me = this
-        let configParam = {}
-        for (let i = 0; i < me.configs.length; i++) {
-          let item = me.configs[i]
-          configParam[item.key] = item.value
-        }
-        me.loading = true
-        HttpClient.post('/api/admin/sys-config/save', {
-          config: JSON.stringify(configParam)
-        }).then(() => {
-          me.loading = false
-          me.$message({message: '提交成功', type: 'success'});
-        }).catch(rsp => {
-          me.loading = false
-          me.$notify.error({title: '错误', message: rsp.message})
+export default {
+  name: 'List',
+  data() {
+    return {
+      configs: [],
+      loading: false,
+    };
+  },
+  mounted() {
+    this.load();
+  },
+  methods: {
+    load() {
+      const me = this;
+      HttpClient.get('/api/admin/sys-config/all')
+        .then((data) => {
+          me.configs = data;
         })
+        .catch((rsp) => {
+          me.$notify.error({ title: '错误', message: rsp.message });
+        });
+    },
+    save() {
+      const me = this;
+      const configParam = {};
+      for (let i = 0; i < me.configs.length; i++) {
+        const item = me.configs[i];
+        configParam[item.key] = item.value;
       }
-    }
-  }
+      me.loading = true;
+      HttpClient.post('/api/admin/sys-config/save', {
+        config: JSON.stringify(configParam),
+      }).then(() => {
+        me.loading = false;
+        me.$message({ message: '提交成功', type: 'success' });
+      }).catch((rsp) => {
+        me.loading = false;
+        me.$notify.error({ title: '错误', message: rsp.message });
+      });
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">
@@ -72,4 +72,3 @@
     margin-top: 20px;
   }
 </style>
-
