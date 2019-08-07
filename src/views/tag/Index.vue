@@ -22,8 +22,13 @@
     </el-col>
 
     <!--列表-->
-    <el-table :data="results" highlight-current-row border v-loading="listLoading"
-              style="width: 100%;">
+    <el-table
+      :data="results"
+      highlight-current-row
+      border
+      v-loading="listLoading"
+      style="width: 100%;"
+    >
       <el-table-column prop="id" label="编号"></el-table-column>
       <el-table-column prop="name" label="名称"></el-table-column>
       <!--<el-table-column prop="description" label="描述"></el-table-column>-->
@@ -42,14 +47,17 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-pagination layout="total, sizes, prev, pager, next, jumper" :page-sizes="[20, 50, 100, 300]"
-                     :current-page="page.page"
-                     :page-size="page.limit"
-                     :total="page.total"
-                     style="float:right;">
-      </el-pagination>
+      <el-pagination
+        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[20, 50, 100, 300]"
+        @current-change="handlePageChange"
+        @size-change="handleLimitChange"
+        :current-page="page.page"
+        :page-size="page.limit"
+        :total="page.total"
+        style="float:right;"
+      ></el-pagination>
     </el-col>
-
 
     <!--新增界面-->
     <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
@@ -93,10 +101,10 @@
 </template>
 
 <script>
-import HttpClient from '@/apis/HttpClient';
+import HttpClient from "@/apis/HttpClient";
 
 export default {
-  name: 'List',
+  name: "List",
   data() {
     return {
       results: [],
@@ -106,23 +114,23 @@ export default {
 
       addForm: {
         categoryId: 0,
-        name: '',
-        description: '',
+        name: "",
+        description: ""
       },
       addFormVisible: false,
       addFormRules: {},
       addLoading: false,
 
       editForm: {
-        id: '',
+        id: "",
         categoryId: 0,
-        name: '',
-        description: '',
-        status: 0,
+        name: "",
+        description: "",
+        status: 0
       },
       editFormVisible: false,
       editFormRules: {},
-      editLoading: false,
+      editLoading: false
     };
   },
   mounted() {
@@ -135,11 +143,11 @@ export default {
 
       const params = Object.assign(me.filters, {
         page: me.page.page,
-        limit: me.page.limit,
+        limit: me.page.limit
       });
 
-      HttpClient.post('/api/admin/tag/list', params)
-        .then((data) => {
+      HttpClient.post("/api/admin/tag/list", params)
+        .then(data => {
           me.results = data.results;
           me.page = data.page;
         })
@@ -147,52 +155,59 @@ export default {
           me.listLoading = false;
         });
     },
+    handlePageChange(val) {
+      this.page.page = val;
+      this.list();
+    },
+    handleLimitChange(val) {
+      this.page.limit = val;
+      this.list();
+    },
     handleAdd() {
       this.addForm = {
-        categoryId: '',
-        name: '',
-        description: '',
+        categoryId: "",
+        name: "",
+        description: ""
       };
       this.addFormVisible = true;
     },
     addSubmit() {
       const me = this;
-      HttpClient.post('/api/admin/tag/create', this.addForm)
-        .then((data) => {
-          me.$message({ message: '提交成功', type: 'success' });
+      HttpClient.post("/api/admin/tag/create", this.addForm)
+        .then(data => {
+          me.$message({ message: "提交成功", type: "success" });
           me.addFormVisible = false;
           me.list();
         })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
+        .catch(rsp => {
+          me.$notify.error({ title: "错误", message: rsp.message });
         });
     },
     handleEdit(index, row) {
       const me = this;
       HttpClient.get(`/api/admin/tag/${row.id}`)
-        .then((data) => {
+        .then(data => {
           me.editForm = Object.assign({}, data);
           me.editFormVisible = true;
         })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
+        .catch(rsp => {
+          me.$notify.error({ title: "错误", message: rsp.message });
         });
     },
     editSubmit() {
       const me = this;
-      HttpClient.post('/api/admin/tag/update', me.editForm)
-        .then((data) => {
+      HttpClient.post("/api/admin/tag/update", me.editForm)
+        .then(data => {
           me.list();
           me.editFormVisible = false;
         })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
+        .catch(rsp => {
+          me.$notify.error({ title: "错误", message: rsp.message });
         });
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-
 </style>
