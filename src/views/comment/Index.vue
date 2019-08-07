@@ -1,6 +1,5 @@
 <template>
   <section>
-
     <!--
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters">
@@ -20,7 +19,6 @@
     </el-col>
     -->
 
-
     <!--
     <el-table :data="results" highlight-current-row border v-loading="listLoading"
               style="width: 100%;" @selection-change="handleSelectionChange">
@@ -38,80 +36,84 @@
     </el-table>
     -->
 
-    <ul class="comments">
-      <li v-for="item in results" :key="item.id">
-        <div class="comment-item">
-          <div class="avatar" :style="{backgroundImage:'url(' + item.user.avatar + ')'}">
-
-          </div>
-          <div class="content">
-            <div class="meta">
-              <span class="nickname">{{item.user.nickname}}</span>
-              <span class="create-time">{{item.createTime | formatDate}}</span>
+    <div>
+      <ul class="comments">
+        <li v-for="item in results" :key="item.id">
+          <div class="comment-item">
+            <div class="avatar" :style="{backgroundImage:'url(' + item.user.avatar + ')'}"></div>
+            <div class="content">
+              <div class="meta">
+                <span class="nickname">{{item.user.nickname}}</span>
+                <span class="create-time">{{item.createTime | formatDate}}</span>
+              </div>
+              <div class="summary" v-html="item.content"></div>
+              <div class="tools">
+                <span class="item info" v-if="item.status === 1">已删除</span>
+                <a class="item" @click="handleDelete(item)">删除</a>
+              </div>
             </div>
-            <div class="summary" v-html="item.content"></div>
           </div>
-        </div>
-
-      </li>
-    </ul>
+        </li>
+      </ul>
+    </div>
 
     <el-col :span="24" class="toolbar">
-      <el-pagination layout="total, sizes, prev, pager, next, jumper" :page-sizes="[20, 50, 100, 300]"
-                     @current-change="handlePageChange"
-                     @size-change="handleLimitChange"
-                     :current-page="page.page"
-                     :page-size="page.limit"
-                     :total="page.total"
-                     style="float:right;">
-      </el-pagination>
+      <el-pagination
+        layout="total, sizes, prev, pager, next, jumper"
+        :page-sizes="[20, 50, 100, 300]"
+        @current-change="handlePageChange"
+        @size-change="handleLimitChange"
+        :current-page="page.page"
+        :page-size="page.limit"
+        :total="page.total"
+        style="float:right;"
+      ></el-pagination>
     </el-col>
-
   </section>
 </template>
 
 <script>
-import HttpClient from '@/apis/HttpClient';
+import HttpClient from "@/apis/HttpClient";
 
 export default {
-  name: 'List',
+  name: "List",
   data() {
     return {
       results: [],
       listLoading: false,
       page: {},
       filters: {
-        userId: '',
-        status: '',
+        userId: "",
+        status: ""
       },
       selectedRows: [],
 
       addForm: {
-        userId: '',
-        entityType: '',
-        entityId: '',
-        content: '',
-        quoteId: '',
-        status: '',
-        createTime: '',
+        userId: "",
+        entityType: "",
+        entityId: "",
+        content: "",
+        quoteId: "",
+        status: "",
+        createTime: ""
       },
       addFormVisible: false,
       addFormRules: {},
       addLoading: false,
 
       editForm: {
-        id: '',
-        userId: '',
-        entityType: '',
-        entityId: '',
-        content: '',
-        quoteId: '',
-        status: '',
-        createTime: '',
+        id: "",
+        userId: "",
+        entityType: "",
+        entityId: "",
+        content: "",
+        quoteId: "",
+        status: "",
+        createTime: ""
       },
       editFormVisible: false,
       editFormRules: {},
-      editLoading: false,
+      editLoading: false
     };
   },
   mounted() {
@@ -123,10 +125,10 @@ export default {
       me.listLoading = true;
       const params = Object.assign(me.filters, {
         page: me.page.page,
-        limit: me.page.limit,
+        limit: me.page.limit
       });
-      HttpClient.post('/api/admin/comment/list', params)
-        .then((data) => {
+      HttpClient.post("/api/admin/comment/list", params)
+        .then(data => {
           me.results = data.results;
           me.page = data.page;
         })
@@ -142,107 +144,91 @@ export default {
       this.page.limit = val;
       this.list();
     },
-    handleAdd() {
-      this.addForm = {
-        name: '',
-        description: '',
-      };
-      this.addFormVisible = true;
-    },
-    addSubmit() {
-      const me = this;
-      HttpClient.post('/api/admin/comment/create', this.addForm)
-        .then((data) => {
-          me.$message({ message: '提交成功', type: 'success' });
-          me.addFormVisible = false;
-          me.list();
-        })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
-        });
-    },
-    handleEdit(index, row) {
-      const me = this;
-      HttpClient.get(`/api/admin/comment/${row.id}`)
-        .then((data) => {
-          me.editForm = Object.assign({}, data);
-          me.editFormVisible = true;
-        })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
-        });
-    },
-    editSubmit() {
-      const me = this;
-      HttpClient.post('/api/admin/comment/update', me.editForm)
-        .then((data) => {
-          me.list();
-          me.editFormVisible = false;
-        })
-        .catch((rsp) => {
-          me.$notify.error({ title: '错误', message: rsp.message });
-        });
-    },
-
     handleSelectionChange(val) {
       this.selectedRows = val;
     },
-  },
+    handleDelete(row) {
+      const me = this;
+      HttpClient.post(`/api/admin/comment/delete/${row.id}`)
+        .then(data => {
+          me.$message.success("删除成功");
+          me.list();
+        })
+        .catch(rsp => {
+          me.$notify.error({ title: "错误", message: rsp.message });
+        });
+    }
+  }
 };
 </script>
 
 <style scoped lang="scss">
-  .comments {
-    list-style: none;
-    padding: 0px;
+.comments {
+  list-style: none;
+  padding: 0px;
 
-    li {
-      border-bottom: 1px solid #f2f2f2;
-      padding-top: 10px;
-      padding-bottom: 10px;
+  li {
+    border-bottom: 1px solid #f2f2f2;
+    padding-top: 10px;
+    padding-bottom: 10px;
 
-      .comment-item {
-        display: flex;
+    .comment-item {
+      display: flex;
 
-        .avatar {
-          min-width: 40px;
-          min-height: 40px;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          margin-right: 10px;
-          background-repeat: no-repeat;
-          background-size: contain;
-          background-position: center;
-        }
+      .avatar {
+        min-width: 40px;
+        min-height: 40px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
 
-        .content {
-          .meta {
+      .content {
+        width: 100%;
+        .meta {
+          span {
+            &:not(:last-child) {
+              margin-right: 5px;
+            }
 
-            span {
-              &:not(:last-child) {
-                margin-right: 5px;
-              }
+            &.nickname {
+              color: #1a1a1a;
+              font-size: 14px;
+              font-weight: bold;
+            }
 
-              &.nickname {
-                color: #1a1a1a;
-                font-size: 14px;
-                font-weight: bold;
-              }
-
-              &.create-time {
-                color: #999;
-                font-size: 13px;
-              }
+            &.create-time {
+              color: #999;
+              font-size: 13px;
             }
           }
+        }
 
-          .summary {
-            font-size: 15px;
-            color: #555;
+        .summary {
+          font-size: 15px;
+          color: #555;
+        }
+
+        .tools {
+          float: right;
+          .item {
+            color: blue;
+            cursor: pointer;
+            &:not(:last-child) {
+              margin-right: 10px;
+            }
+
+            &.info {
+              color: red;
+            }
           }
         }
       }
     }
   }
+}
 </style>
