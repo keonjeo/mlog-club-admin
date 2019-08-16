@@ -118,7 +118,7 @@
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
-          <el-input v-model="editForm.password" placeholder="不填写标识不更改密码"></el-input>
+          <el-input v-model="editForm.password" placeholder="不填写表示不更改密码"></el-input>
         </el-form-item>
 
         <el-form-item label="状态" prop="status">
